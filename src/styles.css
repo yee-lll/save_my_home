@@ -1,0 +1,395 @@
+:root{
+  --bg:#0f0f10;
+  --panel:#151517;
+  --panel-2:#1b1c1f;
+  --text:#eaeaea;
+  --muted:#b3b3b3;
+  --accent:#2f6cf6;
+  --border:#25262a;
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,
+body,
+#root {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* App 전체적인 코드부분 */
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ddd;
+}
+
+.title-wrap {
+    line-height: 1.1
+}
+
+.title {
+    font-weight: 700
+}
+
+
+/* 온라인 느낌 */
+
+.header-actions {
+    display: flex;
+    gap: 8px
+}
+
+.icon-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    border-color: #3a3b3f
+}
+
+.hamburger {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.hamburger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+}
+
+
+@media (min-width: 900px) {
+    .hamburger {
+        display: none
+    }
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+/* Sidebar */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+    z-index: 8;
+}
+
+.overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebar {
+    width: 290px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+    position: fixed;
+    inset: 48px auto 0 0;
+    transform: translateX(-100%);
+    transition: transform .2s;
+    z-index: 9;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* 데스크톱에서는 항상 표시 + 고정 위치 */
+@media (min-width: 900px) {
+    .sidebar {
+        position: relative;
+        inset: auto;
+        transform: none;
+    }
+
+   
+}
+
+.new-chat {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px dashed #3a3b3f;
+    background: var(--panel-2);
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.new-chat:hover {
+    border-color: #555
+}
+
+.recent-label {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.recent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
+    flex: 1;
+    border-top: 1px solid var(--border)
+}
+
+.recent-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 6px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.recent-item:hover {
+    background: #18191c
+}
+
+.recent-item.active {
+    background: #202125;
+    outline: 1px solid #2a2b30
+}
+
+.recent-icon {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    background: #2a2b30;
+    border-radius: 50%
+}
+
+.recent-text {
+    line-height: 1.15
+}
+
+.recent-title {
+    font-weight: 600
+}
+
+.recent-time {
+    font-size: 12px;
+    color: var(--muted)
+}
+
+.notice {
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+}
+
+/* Chat area */
+.chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: linear-gradient(#0e0e10, #0d0d0f);
+}
+
+/* Welcome (가운데 큰 아이콘/타이틀/설명) */
+.welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    padding: 16px;
+}
+
+.welcome-icon {
+    font-size: 42px;
+    opacity: .9
+}
+
+.welcome h1 {
+    margin: 6px 0 0;
+    font-size: 20px;
+    font-weight: 800
+}
+
+.welcome p {
+    margin: 0;
+    color: #cfcfcf;
+    line-height: 1.6;
+}
+
+/* Input area */
+.chat-input-wrap {
+    border-top: 1px solid var(--border);
+    padding: 14px;
+    background: var(--panel);
+    position: sticky;
+    bottom: 0;
+}
+
+.chip-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px
+}
+
+.chip {
+    border: 1px solid var(--border);
+    background: #1a1b1e;
+    color: #ddd;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.chip:hover {
+    border-color: #50525a
+}
+
+.helper {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px;
+}
+
+.input-row textarea {
+    flex: 1;
+    resize: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.right-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.attach {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid;
+    background: #ddd;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.counter {
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 72px;
+    text-align: right
+}
+
+.send {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid var(--text);
+    background: var(--text);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    align-items: center;
+}
+
+.send:hover {
+    filter: brightness(1.05)
+}
+
+/* 데스크톱 레이아웃: 사이드바 + 채팅 나란히 */
+@media (min-width: 900px) {
+    .main {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+    }
+
+    .chat-input-wrap {
+        padding: 16px 18px
+    }
+
+    .welcome h1 {
+        font-size: 22px
+    }
+}
