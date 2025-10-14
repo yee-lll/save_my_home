@@ -1,0 +1,142 @@
+
+.settings-wrap {
+    min-height: 100vh;
+    background: #27374D;
+    color: #fff;
+}
+
+
+.settings-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 52px 1fr 52px;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: #27374D;
+    border-bottom: 1px solid rgba(157, 178, 191, .32);
+}
+
+.settings-title {
+    text-align: center;
+    font-weight: 800;
+}
+
+.settings-back,
+.settings-right-space {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-back {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #526D82;
+    border: 1px solid rgba(157, 178, 191, .32);
+}
+
+/* 프로필 부분 css */
+.profile-card {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    background: #27374D;
+    border-bottom: 1px solid rgba(157, 178, 191, .32);
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #9DB2BF;
+    opacity: .25;
+    border: 1px solid rgba(157, 178, 191, .32);
+}
+
+.profile-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.profile-name {
+    font-weight: 700;
+}
+
+.profile-sub {
+    font-size: 13px;
+    color: #DDE6ED;
+    opacity: .85;
+}
+
+.profile-need {
+    color: #DDE6ED;
+    opacity: .9;
+}
+
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #526D82;
+    color: #fff;
+    border: 1px solid rgba(157, 178, 191, .32);
+    cursor: pointer;
+}
+
+.pill-icon {
+    display: inline-block;
+    transform: rotate(180deg);
+}
+
+/* 구분 선 */
+.sep {
+    height: 1px;
+    background: rgba(157, 178, 191, .32);
+}
+
+/* 메뉴 리스트 css */
+.menu-list {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    color: #fff;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: rgba(82, 109, 130, .18);
+}
+
+.menu-item.danger {
+    color: #ff6961;
+}
+
+.mi-icon {
+    width: 20px;
+    display: inline-grid;
+    place-items: center;
+    opacity: .9;
+}
+
+.mi-text {
+    flex: 1;
+}

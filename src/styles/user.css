@@ -1,0 +1,280 @@
+/* Header 부분 */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #27374D;
+    border-bottom: 1px solid var(--border)
+}
+
+.header .brand {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-right: 95px;
+    position: relative;
+}
+
+.header .brand .brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #9DB2BF;
+    opacity: .9
+}
+
+.icon-btn {
+    /* height 조절로 아이템 중앙 정렬 */
+    height: 42px;
+    background: #526D82;
+    color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer
+}
+
+.admin-btn {
+    background: #526D82;
+    color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer
+}
+
+.icon-btn:hover,
+.admin-btn:hover {
+    border-color: #9DB2BF
+}
+
+.app-main {
+    display: flex;
+    min-height: calc(100vh - 64px)
+}
+
+/* user-sidebar 부분 */
+.user-sidebar {
+    width: 300px;
+    padding: 16px;
+    border-right: 1px solid var(--border);
+    background: #27374D;
+}
+
+.user-sidebar .new-chat {
+    width: 100%;
+    padding: 12px;
+    background: rgba(82, 109, 130, 0.25);
+    color: #fff;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+}
+
+.user-sidebar .section-title {
+    margin: 16px 0 8px;
+    color: #9DB2BF;
+    font-size: 14px
+}
+
+.user-sidebar .list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.user-sidebar .item {
+    background: rgba(82, 109, 130, 0.5);
+    ;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px
+}
+
+.user-sidebar .item .title {
+    font-weight: 700
+}
+
+.user-sidebar .item .sub {
+    font-size: 12px;
+    color: #9DB2BF;
+}
+
+.chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column
+}
+
+.chat .welcome {
+    margin: auto;
+    text-align: center
+}
+
+.chat .welcome h1 {
+    margin: 0 0 6px
+}
+
+.chat .welcome p {
+    color: #9DB2BF;
+}
+
+.chat-input {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding: 16px;
+    background: #DDE6ED
+}
+.chat-input .row {
+    display: flex;
+    gap: 10px;
+    align-items: center
+}
+
+.chat-input textarea {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    outline: none;
+    color: #222;
+    background: #fff
+}
+
+.chat-input textarea:focus {
+    border-color: #9DB2BF;
+    box-shadow: 0 0 0 3px rgba(157, 178, 191, .25)
+}
+
+.chat-input .square {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid #DDE6ED;
+    background: #DDE6ED;
+    display: grid;
+    place-items: center;
+    cursor: pointer
+}
+
+/*  웹 -> 모바일 CSS */
+@media (max-width: 768px) {
+
+    html,
+    body {
+        text-size-adjust: 100%;
+    }
+
+
+    .header {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .header .brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        gap: 8px;
+    }
+
+    .brand .dot {
+        width: 28px;
+        height: 28px;
+    }
+
+    .header .icon-btn,
+    .header .admin-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .app-main.desktop-collapsed .user-sidebar {
+        width: 0;
+        padding: 0;
+        border: none;
+        overflow: hidden;
+    }
+
+    .app-main {
+        position: relative;
+    }
+
+    .user-sidebar {
+        position: fixed;
+        z-index: 40;
+        top: 56px;
+        left: 0;
+        width: 86%;
+        max-width: 320px;
+        height: calc(100vh - 56px);
+        background: #27374D;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+    }
+
+    .user-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .user-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .35);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease;
+        z-index: 30;
+       
+    }
+  
+    .user-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .chat .welcome h1 {
+        font-size: 20px;
+        line-height: 1.3;
+        margin-bottom: 6px;
+    }
+
+    .chat .welcome p {
+        font-size: 13px;
+    }
+
+
+    .chat-input {
+        padding: 12px;
+    }
+    .chat-input .row {
+        gap: 8px;
+    }
+
+    .chat-input textarea {
+        font-size: 14px;
+        min-height: 44px;
+    }
+
+    .chat-input .square {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+
+
+    .chat-input {
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+
+    .icon-btn,
+    .admin-btn,
+    .square,
+    .new-chat {
+        -webkit-tap-highlight-color: transparent;
+    }
+}

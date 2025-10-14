@@ -1,0 +1,207 @@
+/* 관리자 페이지 css */
+.admin-shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    background: #fff;
+    color: #111
+}
+
+.admin-sidebar {
+    background: #DDE6ED;
+    border-right: 1px solid #cfd9e1;
+    padding: 20px
+}
+.brand-logo {
+    width: 100px;
+    height: 100px;
+    opacity: .9
+}
+
+.admin-logo {
+    font-size: 28px;
+    font-weight: 900;
+    color: #27374D;
+    margin-bottom: 16px
+}
+
+.admin-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.admin-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #0f3f57
+}
+
+.admin-menu a.active {
+    background: #fff
+}
+
+.admin-dot {
+    width: 10px;
+    height: 10px;
+    background: #e53935;
+    border-radius: 2px
+}
+
+.admin-main {
+    padding: 24px
+}
+
+.admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px
+}
+
+.admin-title {
+    font-size: 26px;
+    font-weight: 800
+}
+
+.admin-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cfd9e1;
+    border-radius: 999px;
+    padding: 6px 10px;
+    min-width: 260px
+}
+
+.search input {
+    border: none;
+    outline: none;
+    width: 100%
+}
+
+.tool-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #fff;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px
+}
+
+.table thead th {
+    font-weight: 800;
+    font-size: 14px;
+    color: #27374D;
+    text-align: left;
+    padding: 10px 12px;
+    background: #eef3f7;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+.table tbody td {
+    background: #f6f9fb;
+    padding: 12px;
+    border-top: 1px solid #e8edf2;
+    border-bottom: 1px solid #e8edf2
+}
+
+.table tbody tr td:first-child {
+    border-left: 1px solid #e8edf2;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px
+}
+
+.table tbody tr td:last-child {
+    border-right: 1px solid #e8edf2;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px
+}
+
+.row-actions {
+    display: flex;
+    gap: 10px
+}
+
+.small-btn {
+    border: 1px solid #cfd9e1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer
+}
+
+.pager {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 14px
+}
+
+.pager input {
+    width: 64px;
+    border: 1px solid #cfd9e1;
+    border-radius: 8px;
+    padding: 6px
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .25);
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.modal {
+    width: 520px;
+    max-width: 92%;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+}
+
+.modal h3 {
+    margin: 0 0 12px
+}
+
+.modal .form {
+    display: grid;
+    gap: 10px
+}
+
+.modal .form label {
+    font-size: 13px;
+    color: #6b7280
+}
+
+.modal .form input {
+    border: 1px solid #cfd9e1;
+    border-radius: 8px;
+    padding: 9px 11px
+}
+
+.modal .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px
+}

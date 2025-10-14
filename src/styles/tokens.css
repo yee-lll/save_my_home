@@ -1,0 +1,29 @@
+:root {
+    --border: rgba(157, 178, 191, .32);
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,
+body,
+#root {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+    color: #ffffff;
+    background: #27374D;
+}
+
+a {
+    color: inherit;
+    text-decoration: none
+}
+
+button {
+    font: inherit
+}

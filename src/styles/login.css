@@ -1,0 +1,48 @@
+/* 로그인 전반적인 css */
+.totalbox {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    background: #fff;
+    color: #111;
+}
+
+.login-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.login-title {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+
+
+
+
+/* 로그인 & 비밀번호 박스 */
+.inputbox {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cfd9e1;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cfd9e1;
+    border-radius: 10px;
+    background: #eef3f7;
+    cursor: pointer;
+}
