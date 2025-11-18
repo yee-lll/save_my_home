@@ -1,4 +1,3 @@
-/* Header 부분 */
 .header {
     display: flex;
     align-items: center;
@@ -25,7 +24,6 @@
 }
 
 .icon-btn {
-    /* height 조절로 아이템 중앙 정렬 */
     height: 42px;
     background: #526D82;
     color: #ffffff;
@@ -54,7 +52,7 @@
     min-height: calc(100vh - 64px)
 }
 
-/* user-sidebar 부분 */
+
 .user-sidebar {
     width: 300px;
     padding: 16px;
@@ -156,8 +154,6 @@
     place-items: center;
     cursor: pointer
 }
-
-/*  웹 -> 모바일 CSS */
 @media (max-width: 768px) {
 
     html,

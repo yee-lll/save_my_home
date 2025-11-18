@@ -6,6 +6,7 @@ import "./styles/tokens.css";
 import "./styles/user.css";   
 import "./styles/admin.css";  
 import "./styles/login.css"
+import "./styles/landing.css";
 import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

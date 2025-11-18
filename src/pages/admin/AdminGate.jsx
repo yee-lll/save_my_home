@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import { useLocation, useNavigate, Outlet } from "react-router-dom";
+import React from "react";
+import { Navigate } from "react-router-dom";
 
-export default function AdminGate({ children }){
-  const nav = useNavigate();
-  const isAuthed = sessionStorage.getItem("adminAuthed")==="1";
-  const { pathname } = useLocation();
+export default function AdminGate({ children }) {
+  const userRole = localStorage.getItem("USER_ROLE");
 
-  useEffect(()=>{
-    if(!isAuthed) nav("/admin/login",{ replace:true });
-  },[isAuthed, nav, pathname]);
+  // 1 관리자, 0 사용자
+  if (userRole === "1") {
+    return children;
+  }
 
-  return isAuthed ? children || <Outlet/> : null;
+  // 관리자가 아니면 메인화면
+  return <Navigate to="/" replace />;
 }

@@ -39,7 +39,6 @@
     border: 1px solid rgba(157, 178, 191, .32);
 }
 
-/* 프로필 부분 css */
 .profile-card {
     display: grid;
     grid-template-columns: 56px 1fr auto;
@@ -97,13 +96,13 @@
     transform: rotate(180deg);
 }
 
-/* 구분 선 */
+
 .sep {
     height: 1px;
     background: rgba(157, 178, 191, .32);
 }
 
-/* 메뉴 리스트 css */
+
 .menu-list {
     display: flex;
     flex-direction: column;

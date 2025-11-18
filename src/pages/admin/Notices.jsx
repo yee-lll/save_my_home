@@ -1,62 +1,239 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  listNotices,
+  createNotice,
+  updateNotice,
+  deleteNotice,
+} from "../../api/noticeApi";
+import Pagination from "./Pagination";
+import InNav from "./InNav";
+
 export default function Notices() {
-    const rows = [
-        { id: 1, no: "000", type: "점검", title: "부동산 자문 ai 시스템 업데이트 내용", date: "00.00.00 00:00" },
-        { id: 2, no: "000", type: "점검", title: "부동산 자문 ai 시스템 업데이트 내용", date: "00.00.00 00:00" },
-    ];
-    return (
-        <>
-            <div className="admin-topbar">
-                <div className="admin-title">공지사항</div>
-                <div className="admin-tools">
-                    <label className="search"><input placeholder="검색..." />
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <g clip-path="url(#clip0_169_583)">
-                            <path d="M16.3099 16.28C14.6717 17.9013 12.4598 18.8108 10.1549 18.8108C7.85002 18.8108 5.63819 17.9013 3.99993 16.28C3.19447 15.4855 2.5549 14.5389 2.11836 13.4952C1.68183 12.4514 1.45703 11.3313 1.45703 10.2C1.45703 9.06862 1.68183 7.94855 2.11836 6.9048C2.5549 5.86106 3.19447 4.91446 3.99993 4.11998C5.63393 2.50593 7.83817 1.60083 10.1349 1.60083C12.4317 1.60083 14.6359 2.50593 16.2699 4.11998C17.078 4.9118 17.7207 5.8563 18.1607 6.89861C18.6006 7.94092 18.8291 9.06026 18.8329 10.1916C18.8366 11.323 18.6155 12.4438 18.1824 13.489C17.7492 14.5341 17.1128 15.4829 16.3099 16.28Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M16.3101 16.28L22.5001 22.4" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_169_583">
-                                <rect width="24" height="24" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg></label>
-                    <button className="tool-btn" title="필터">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="17" viewBox="0 0 25 17" fill="none">
-                        <path d="M4.125 9.625H20.625V6.875H4.125V9.625ZM0 0V2.75H24.75V0H0ZM9.625 16.5H15.125V13.75H9.625V16.5Z" fill="black" />
-                    </svg>
-                    </button>
-                    <button className="tool-btn" title="추가">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="24" viewBox="0 0 33 33" fill="none">
-                        <g clip-path="url(#clip0_169_574)">
-                            <path d="M0 16.49C0 17.4694 0.820002 18.2688 1.78001 18.2688H14.72V31.2011C14.72 32.1605 15.52 32.9799 16.5 32.9799C17.4801 32.9799 18.3001 32.1605 18.3001 31.2011V18.2688H31.2201C32.1801 18.2688 33 17.4694 33 16.49C33 15.5106 32.1801 14.6911 31.2201 14.6911H18.3001V1.77892C18.3001 0.819502 17.4801 0 16.5 0C15.52 0 14.72 0.819502 14.72 1.77892V14.6911H1.78001C0.820002 14.6911 0 15.5106 0 16.49Z" fill="black" fill-opacity="0.85" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_169_574">
-                                <rect width="32" height="33" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    </button>
-                </div>
-            </div>
-            <table className="table">
-                <thead>
-                    <tr><th>번호</th><th>구분</th><th>제목</th><th>작성일</th><th>관리</th></tr>
-                </thead>
-                <tbody>
-                    {rows.map(r => (
-                        <tr key={r.id}>
-                            <td>{r.no}</td><td>{r.type}</td><td>{r.title}</td><td>{r.date}</td>
-                            <td className="row-actions">
-                                <button className="small-btn">수정</button>
-                                <button className="small-btn">삭제</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className="pager"><span>Page</span><input/></div>
-        </>
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState({ key: "id", dir: "desc" });
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+
+  const [modal, setModal] = useState(null); 
+  const [createOpen, setCreateOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const toggleSort = (k) =>
+    setSort((s) =>
+      s.key === k ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: k, dir: "asc" }
     );
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const list = await listNotices();
+
+      const mapped = (list || []).map((r) => {
+        const id = r.NOTICE_ID ?? r.id ?? r.noticeId;
+        const titleFromDb = r.NOTICE_TITLE ?? r.noticeTitle ?? "";
+        const raw = r.NOTICE_INFO ?? r.noticeInfo ?? "";
+
+        let title = titleFromDb || "";
+        let desc = "";
+
+        if (raw && typeof raw === "string") {
+          // 기존데이터가 JSON이 들어 있을 가능성
+          try {
+            const obj = JSON.parse(raw);
+            if (!title) title = obj.title || "";
+            desc = obj.desc || obj.description || raw;
+          } catch {
+
+            desc = raw;
+          }
+        }
+
+        return { id, title, desc };
+      });
+
+      setRows(mapped);
+    } catch (e) {
+      console.error(e);
+      alert("공지 목록 불러오기 실패: " + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+
+  const filtered = useMemo(() => {
+    const qq = q.trim().toLowerCase();
+    const sorted = [...rows].sort((a, b) => {
+      const d = sort.dir === "asc" ? 1 : -1;
+      const ak = a[sort.key] ?? "";
+      const bk = b[sort.key] ?? "";
+      return (ak > bk ? 1 : ak < bk ? -1 : 0) * d;
+    });
+
+    if (!qq) return sorted;
+
+    return sorted.filter(
+      (r) =>
+        (r.title || "").toLowerCase().includes(qq) ||
+        (r.desc || "").toLowerCase().includes(qq)
+    );
+  }, [rows, q, sort]);
+
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+
+  const pagedRows = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, currentPage]);
+
+  const save = async (data) => {
+    if (!data.title?.trim()) return alert("공지 제목을 입력하세요.");
+    if (!data.desc?.trim()) return alert("공지 내용을 입력하세요.");
+
+    const title = data.title.trim();
+    const desc = data.desc.trim();
+
+    const payload = {
+      noticeTitle: title,
+      noticeInfo: desc,
+    };
+
+    try {
+      if (data.id) {
+        await updateNotice(data.id, payload);
+      } else {
+        await createNotice(payload);
+      }
+      await load();
+      setModal(null);
+    } catch (e) {
+      console.error(e);
+      alert("저장 실패: " + e.message);
+    }
+  };
+
+  // 🔹 삭제
+  const remove = async (id) => {
+    if (!window.confirm("삭제하시겠습니까?")) return;
+    try {
+      await deleteNotice(id);
+      await load();
+    } catch (e) {
+      console.error(e);
+      alert("삭제 실패: " + e.message);
+    }
+  };
+
+  return (
+    <>
+
+      <InNav
+      title="공지사항"
+        onAdd={() => setModal({ title: "", desc: "" })}
+        q={q}
+        onQChange={setQ}
+      />
+
+      {loading && <div style={{ padding: 12 }}>로딩중…</div>}
+
+      <table className="table">
+        <thead>
+          <tr>
+            <th onClick={() => toggleSort("title")}>제목</th>
+            <th style={{ width: 160 }}>관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pagedRows.map((r) => (
+            <tr key={r.id}>
+              <td>
+                <details>
+                  <summary>{r.title}</summary>
+                  <div
+                    style={{
+                      padding: "8px 0 0 12px",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {r.desc}
+                  </div>
+                </details>
+              </td>
+              <td className="row-actions">
+                <button className="small-btn" onClick={() => setModal(r)}>
+                  수정
+                </button>
+                <button className="small-btn" onClick={() => remove(r.id)}>
+                  삭제
+                </button>
+              </td>
+            </tr>
+          ))}
+
+          {pagedRows.length === 0 && !loading && (
+            <tr>
+              <td colSpan={2} style={{ textAlign: "center" }}>
+                데이터 없음
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      {modal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>{modal.id ? "공지 수정" : "공지 생성"}</h3>
+            <div className="form">
+              <label>공지 제목</label>
+              <input
+                placeholder="제목을 입력하세요"
+                value={modal.title}
+                onChange={(e) =>
+                  setModal((m) => ({ ...m, title: e.target.value }))
+                }
+              />
+
+              <label>공지 내용</label>
+              <textarea
+                rows={5}
+                placeholder="공지 상세 내용을 입력하세요"
+                value={modal.desc}
+                onChange={(e) =>
+                  setModal((m) => ({ ...m, desc: e.target.value }))
+                }
+              />
+            </div>
+
+            <div className="actions">
+              <button className="small-btn" onClick={() => save(modal)}>
+                {modal.id ? "수정" : "생성"}
+              </button>
+              <button className="small-btn" onClick={() => setModal(null)}>
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!createOpen && !detailOpen && (
+        <Pagination
+          page={currentPage}
+          pageCount={pageCount}
+          onPrev={() => setPage((p) => Math.max(1, p - 1))}
+          onNext={() => setPage((p) => Math.min(pageCount, p + 1))}
+        />
+      )}
+    </>
+  );
 }

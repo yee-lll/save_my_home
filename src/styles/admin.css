@@ -1,4 +1,3 @@
-/* 관리자 페이지 css */
 .admin-shell {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -8,10 +7,12 @@
 }
 
 .admin-sidebar {
+    position: relative;
     background: #DDE6ED;
     border-right: 1px solid #cfd9e1;
-    padding: 20px
+    padding: 20px;
 }
+
 .brand-logo {
     width: 100px;
     height: 100px;
@@ -42,13 +43,6 @@
 
 .admin-menu a.active {
     background: #fff
-}
-
-.admin-dot {
-    width: 10px;
-    height: 10px;
-    background: #e53935;
-    border-radius: 2px
 }
 
 .admin-main {
@@ -148,6 +142,19 @@
     cursor: pointer
 }
 
+.small-btn-logout {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    border: 1px solid #cfd9e1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    width: calc(100% - 40px);
+   
+}
+
 .pager {
     display: flex;
     gap: 10px;
@@ -204,4 +211,117 @@
     display: flex;
     justify-content: space-between;
     margin-top: 16px
+}
+.faq-answer-preview {
+  display: inline-block;
+  max-width: 560px;        
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.cases-table tr {
+  height: 72px;              
+}
+.cases-table td, .cases-table th {
+  vertical-align: middle;       
+}
+
+
+.cases-table .cell {
+  display: block;
+  overflow: hidden;
+}
+
+
+.cases-table .one-line {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+.cases-table .two-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;       
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  max-height: calc(1.4em * 2);  
+  white-space: normal;         
+}
+
+.cases-table .row-actions {
+  text-align: right;
+}
+
+
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--link, #1d4ed8);
+  cursor: pointer;
+}
+
+
+.faq-answer-row td {
+  background: #f8fbff;
+}
+.faq-answer-full {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  padding: 8px 4px;
+}
+.table.cases-table {
+  table-layout: fixed;    
+  width: 100%;
+}
+
+
+.table.cases-table th,
+.table.cases-table td {
+  vertical-align: middle;
+  padding: 10px 12px;
+ 
+  display: table-cell;      
+}
+
+
+.table.cases-table td.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table.cases-table .row-actions {
+  width: 100px;
+}
+
+.table.cases-table .w-name { max-width: 360px; }
+.table.cases-table .w-no   { max-width: 180px; }
+
+@media (max-width: 1200px) {
+  .table.cases-table .w-name { max-width: 300px; }
+  .table.cases-table .w-no   { max-width: 160px; }
+}
+@media (max-width: 992px) {
+  .table.cases-table .w-name { max-width: 260px; }
+  .table.cases-table .w-no   { max-width: 140px; }
+}
+
+.pager {
+  display: flex;
+  justify-content: center;   
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+
+.pager .small-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.br-delete{
+  white-space: nowrap;
+
 }

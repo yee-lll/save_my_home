@@ -1,66 +1,283 @@
-import React from "react";
-export default function Offices(){
-  const rows=[
-    {id:1, name:"사무소 명", phone:"000-0000-0000", addr:"서울특별시 강남구", field:"부동산(매매/임대)", hours:"00:00~00:00", dates:"00.00.00"},
-    {id:2, name:"사무소 명", phone:"000-0000-0000", addr:"서울특별시 강남구", field:"부동산(매매/임대)", hours:"00:00~00:00", dates:"00.00.00"},
-  ];
-  return (
-    <>
-      <div className="admin-topbar">
-        <div className="admin-title">법률사무소 관리</div>
-        <div className="admin-tools">
-          <label className="search"><input placeholder="검색..." /><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <g clip-path="url(#clip0_169_583)">
-                            <path d="M16.3099 16.28C14.6717 17.9013 12.4598 18.8108 10.1549 18.8108C7.85002 18.8108 5.63819 17.9013 3.99993 16.28C3.19447 15.4855 2.5549 14.5389 2.11836 13.4952C1.68183 12.4514 1.45703 11.3313 1.45703 10.2C1.45703 9.06862 1.68183 7.94855 2.11836 6.9048C2.5549 5.86106 3.19447 4.91446 3.99993 4.11998C5.63393 2.50593 7.83817 1.60083 10.1349 1.60083C12.4317 1.60083 14.6359 2.50593 16.2699 4.11998C17.078 4.9118 17.7207 5.8563 18.1607 6.89861C18.6006 7.94092 18.8291 9.06026 18.8329 10.1916C18.8366 11.323 18.6155 12.4438 18.1824 13.489C17.7492 14.5341 17.1128 15.4829 16.3099 16.28Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M16.3101 16.28L22.5001 22.4" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_169_583">
-                                <rect width="24" height="24" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    </label>
-          <button className="tool-btn" title="필터">
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="17" viewBox="0 0 25 17" fill="none">
-                        <path d="M4.125 9.625H20.625V6.875H4.125V9.625ZM0 0V2.75H24.75V0H0ZM9.625 16.5H15.125V13.75H9.625V16.5Z" fill="black" />
-                    </svg>
-          </button>
-          <button className="tool-btn" title="추가">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="24" viewBox="0 0 33 33" fill="none">
-                        <g clip-path="url(#clip0_169_574)">
-                            <path d="M0 16.49C0 17.4694 0.820002 18.2688 1.78001 18.2688H14.72V31.2011C14.72 32.1605 15.52 32.9799 16.5 32.9799C17.4801 32.9799 18.3001 32.1605 18.3001 31.2011V18.2688H31.2201C32.1801 18.2688 33 17.4694 33 16.49C33 15.5106 32.1801 14.6911 31.2201 14.6911H18.3001V1.77892C18.3001 0.819502 17.4801 0 16.5 0C15.52 0 14.72 0.819502 14.72 1.77892V14.6911H1.78001C0.820002 14.6911 0 15.5106 0 16.49Z" fill="black" fill-opacity="0.85" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_169_574">
-                                <rect width="32" height="33" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-          </button>
-        </div>
-      </div>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>사무소 명</th><th>대표 연락처</th><th>주소/지역</th>
-            <th>전문 분야</th><th>영업시간</th><th>등록일/수정일</th><th>관리</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(r=>(
-            <tr key={r.id}>
-              <td>{r.name}</td><td>{r.phone}</td><td>{r.addr}</td>
-              <td>{r.field}</td><td>{r.hours}</td><td>{r.dates}</td>
-              <td className="row-actions">
-                <button className="small-btn">수정</button>
-                <button className="small-btn">삭제</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="pager"><span>Page</span><input placeholder="1 / 1" /></div>
-    </>
-  );
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useMemo, useState } from "react";
+import http from "../../api/http";
+import "../../styles/admin.css";
+import Pagination from "./Pagination";
+import InNav from "./InNav";
+
+
+
+function toShortAddress(addr) {
+    if (!addr) return "";
+    const parts = String(addr).split(" ").filter(Boolean);
+    if (parts.length <= 2) return parts.join(" ");
+    return parts.slice(0, 2).join(" ");
+}
+
+export default function Offices() {
+    const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [q, setQ] = useState("");
+    const [modal, setModal] = useState(null);
+
+
+    const [page, setPage] = useState(1);
+    const PAGE_SIZE = 10;
+
+    const load = async () => {
+        setLoading(true);
+        try {
+            const list = await http.get("/admin/office").then((r) => r.data);
+
+            const mapped = (list || []).map((r) => {
+                const officeId = r.OFFICE_ID ?? r.officeId ?? r.id;
+                const officeName = r.OFFICE_NAME ?? r.officeName ?? "";
+                const officeTel = r.OFFICE_TEL ?? r.officeTel ?? "";
+                const fullAddr =
+                    r.OFFICE_ADD ?? r.OFFICE_LOCATION ?? r.officeAddress ?? "";
+                const shortAddress = toShortAddress(fullAddr);
+
+                return {
+                    officeId,
+                    officeName,
+                    officeTel,
+                    officeAddress: fullAddr,
+                    shortAddress,
+                };
+            });
+
+            setRows(mapped);
+        } catch (e) {
+            console.error(e);
+            alert("법률사무소 목록 불러오기 실패: " + e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        load();
+    }, []);
+
+
+    const filtered = useMemo(() => {
+        const qq = q.trim().toLowerCase();
+        if (!qq) return rows;
+        return rows.filter((r) => {
+            const name = r.officeName?.toLowerCase() ?? "";
+            const addr = r.officeAddress?.toLowerCase() ?? "";
+            return name.includes(qq) || addr.includes(qq);
+        });
+    }, [rows, q]);
+
+    const sorted = useMemo(() => {
+        const cp = [...filtered];
+        cp.sort((a, b) => {
+            const an = Number(a.officeId);
+            const bn = Number(b.officeId);
+
+            if (!Number.isNaN(an) && !Number.isNaN(bn)) {
+                return an - bn;
+            }
+
+            return String(a.officeId).localeCompare(String(b.officeId), "ko", {
+                numeric: true,
+            });
+        });
+        return cp;
+    }, [filtered]);
+
+    const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+    const currentPage = Math.min(page, pageCount);
+
+    const pagedRows = useMemo(() => {
+        const start = (currentPage - 1) * PAGE_SIZE;
+        return sorted.slice(start, start + PAGE_SIZE);
+    }, [sorted, currentPage]);
+
+    useEffect(() => {
+        if (page > pageCount) setPage(pageCount);
+    }, [page, pageCount]);
+
+
+    const save = async () => {
+        if (!modal) return;
+        const { officeId, officeName, officeTel, officeAddress, isNew } = modal;
+
+        if (!officeId?.trim()) return alert("사무소 ID를 입력하세요.");
+        if (!officeName?.trim()) return alert("사무소명을 입력하세요.");
+        if (!officeTel?.trim()) return alert("대표 연락처를 입력하세요.");
+        if (!officeAddress?.trim()) return alert("주소(전체)를 입력하세요.");
+
+        try {
+            if (isNew) {
+                await http.post("/admin/office/create", {
+                    officeId: officeId.trim(),
+                    name: officeName.trim(),
+                    tel: officeTel.trim(),
+                    location: officeAddress.trim(),
+                });
+            } else {
+                await http.put(`/admin/office/${encodeURIComponent(officeId)}`, {
+                    officeName: officeName.trim(),
+                    officeTel: officeTel.trim(),
+                    officeAdd: officeAddress.trim(),
+                });
+            }
+            await load();
+            setModal(null);
+        } catch (e) {
+            console.error(e);
+            alert("저장 실패: " + (e?.response?.data?.message || e.message));
+        }
+    };
+
+
+    const remove = async (officeId) => {
+        if (!window.confirm("해당 사무소를 삭제하시겠습니까?")) return;
+        try {
+            await http.delete(`/admin/office/${encodeURIComponent(officeId)}`);
+            await load();
+        } catch (e) {
+            console.error(e);
+            alert("삭제 실패: " + (e?.response?.data?.message || e.message));
+        }
+    };
+
+    return (
+        <>
+            <InNav
+                title="법률사무소"
+                q={q}
+                onQChange={setQ}
+                onAdd={() =>
+                    setModal({
+                        officeId: "",
+                        officeName: "",
+                        officeTel: "",
+                        officeAddress: "",
+                        isNew: true,
+                    })
+                }
+            />
+
+            {loading && <div style={{ padding: 12 }}>로딩중…</div>}
+
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th>사무소 코드</th>
+                        <th>사무소명</th>
+                        <th>대표 연락처</th>
+                        <th>주소 / 지역</th>
+                        <th style={{ width: 160 }}>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {pagedRows.map((r) => (
+                        <tr key={r.officeId}>
+                            <td>{r.officeId}</td>
+                            <td>{r.officeName}</td>
+                            <td>{r.officeTel}</td>
+                            <td>{r.shortAddress || r.officeAddress}</td>
+                            <td className="row-actions">
+                                <button
+                                    className="small-btn"
+                                    onClick={() =>
+                                        setModal({
+                                            officeId: r.officeId,
+                                            officeName: r.officeName,
+                                            officeTel: r.officeTel,
+                                            officeAddress: r.officeAddress,
+                                            isNew: false,
+                                        })
+                                    }
+                                >
+                                    수정
+                                </button>
+                                <button
+                                    className="small-btn"
+                                    onClick={() => remove(r.officeId)}
+                                >
+                                    삭제
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+
+                    {pagedRows.length === 0 && !loading && (
+                        <tr>
+                            <td colSpan={5} style={{ textAlign: "center" }}>
+                                등록된 법률사무소가 없습니다.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+
+            <Pagination
+                page={currentPage}
+                totalPages={pageCount}
+                onPrev={() => setPage((p) => Math.max(1, p - 1))}
+                onNext={() => setPage((p) => Math.min(pageCount, p + 1))}
+            />
+            {modal && (
+                <div className="modal-backdrop">
+                    <div className="modal">
+                        <h3>{modal.isNew ? "법률사무소 등록" : "법률사무소 수정"}</h3>
+                        <div className="form">
+                            <label>사무소 ID</label>
+                            <input
+                                placeholder="예 : OFF001"
+                                value={modal.officeId}
+                                onChange={(e) =>
+                                    setModal((m) => ({ ...m, officeId: e.target.value }))
+                                }
+                                disabled={!modal.isNew}
+                            />
+
+                            <label>사무소명</label>
+                            <input
+                                placeholder="예 : 사무소명"
+                                value={modal.officeName}
+                                onChange={(e) =>
+                                    setModal((m) => ({ ...m, officeName: e.target.value }))
+                                }
+                            />
+
+                            <label>대표 연락처</label>
+                            <input
+                                placeholder="예 : 000-0000-0000"
+                                value={modal.officeTel}
+                                onChange={(e) =>
+                                    setModal((m) => ({ ...m, officeTel: e.target.value }))
+                                }
+                            />
+
+                            <label>전체 주소</label>
+                            <input
+                                placeholder="예 : ○○○○시 ○○구 ○○○○ ○○○"
+                                value={modal.officeAddress}
+                                onChange={(e) =>
+                                    setModal((m) => ({ ...m, officeAddress: e.target.value }))
+                                }
+                            />
+                            <p style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
+                                목록 나열에서는 간략 주소로 표시됩니다.
+                            </p>
+                        </div>
+
+                        <div className="actions">
+                            <button className="small-btn" onClick={save}>
+                                {modal.isNew ? "생성" : "수정"}
+                            </button>
+                            <button className="small-btn" onClick={() => setModal(null)}>
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
 }

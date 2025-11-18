@@ -1,62 +1,193 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useMemo, useState } from "react";
+import { listFAQ, createFAQ, updateFAQ, deleteFAQ } from "../../api/faqApi";
+import "../../styles/admin.css";
+import Pagination from "./Pagination";
+import InNav from "./InNav";
 
 export default function Faqs() {
-    const items = [
-        { id: 1, cat: "결제", title: "[결제] 회원탈퇴는 어떻게 하나요?", body: "탈퇴 버튼 누르기" },
-    ];
+    const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [q, setQ] = useState("");
+    const [modal, setModal] = useState(null);
+    const [openId, setOpenId] = useState(null);
+    const [sort, setSort] = useState({ key: "updated", dir: "desc" });
+    const [createOpen, setCreateOpen] = useState(false);
+
+    const [detailOpen, setDetailOpen] = useState(false);
+    //페이지
+    const [page, setPage] = useState(1);
+    const PAGE_SIZE = 10;
+
+    //정렬된 데이터
+    const sorted = useMemo(() => {
+        const cp = [...rows];
+        cp.sort((a, b) => {
+            const { key, dir } = sort;
+            const d = dir === "asc" ? 1 : -1;
+            return (a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0) * d;
+        });
+        return cp;
+    }, [rows, sort]);
+
+    const toggleSort = (k) =>
+        setSort((s) =>
+            s.key === k ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: k, dir: "asc" }
+        );
+
+    const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+    const currentPage = Math.min(page, pageCount);
+
+    const pagedRows = useMemo(() => {
+        const start = (currentPage - 1) * PAGE_SIZE;
+        return sorted.slice(start, start + PAGE_SIZE);
+    }, [sorted, currentPage]);
+
+    const load = async () => {
+        setLoading(true);
+        try {
+            const list = await listFAQ(); // 
+            const mapped = (list || []).map((r) => ({
+                id: r.FAQ_ID ?? r.id,
+                q: r.FAQ_Q ?? r.q ?? "",
+                a: r.FAQ_A ?? r.a ?? "",
+            }));
+            setRows(mapped);
+        } catch (e) {
+            alert("목록 불러오기 실패: " + e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => { load(); }, []);
+
+    const filtered = useMemo(() => {
+        const qq = q.trim().toLowerCase();
+        if (!qq) return rows;
+        return rows.filter((r) =>
+            (r.q || "").toLowerCase().includes(qq) ||
+            (r.a || "").toLowerCase().includes(qq)
+        );
+    }, [rows, q]);
+
+    const save = async (data) => {
+        if (!data.q?.trim()) return alert("질문을 입력하세요.");
+        if (!data.a?.trim()) return alert("답변을 입력하세요.");
+        const payload = { faqQ: data.q.trim(), faqA: data.a.trim() };
+        try {
+            if (data.id) await updateFAQ(data.id, payload);
+            else await createFAQ(payload);
+            await load();
+            setModal(null);
+        } catch (e) {
+            alert("저장 실패: " + e.message);
+        }
+    };
+
+    const remove = async (id) => {
+        if (!window.confirm("삭제하시겠습니까?")) return;
+        try {
+            await deleteFAQ(id);
+            await load();
+        } catch (e) {
+            alert("삭제 실패: " + e.message);
+        }
+    };
+    const toggleOpen = (id) => setOpenId((cur) => (cur === id ? null : id));
     return (
         <>
-            <div className="admin-topbar">
-                <div className="admin-title">자주 묻는 질문</div>
-                <div className="admin-tools">
-                    <label className="search"><input placeholder="검색..." />
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <g clip-path="url(#clip0_169_583)">
-                                <path d="M16.3099 16.28C14.6717 17.9013 12.4598 18.8108 10.1549 18.8108C7.85002 18.8108 5.63819 17.9013 3.99993 16.28C3.19447 15.4855 2.5549 14.5389 2.11836 13.4952C1.68183 12.4514 1.45703 11.3313 1.45703 10.2C1.45703 9.06862 1.68183 7.94855 2.11836 6.9048C2.5549 5.86106 3.19447 4.91446 3.99993 4.11998C5.63393 2.50593 7.83817 1.60083 10.1349 1.60083C12.4317 1.60083 14.6359 2.50593 16.2699 4.11998C17.078 4.9118 17.7207 5.8563 18.1607 6.89861C18.6006 7.94092 18.8291 9.06026 18.8329 10.1916C18.8366 11.323 18.6155 12.4438 18.1824 13.489C17.7492 14.5341 17.1128 15.4829 16.3099 16.28Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M16.3101 16.28L22.5001 22.4" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_169_583">
-                                    <rect width="24" height="24" fill="white" />
-                                </clipPath>
-                            </defs>
-                        </svg></label>
-                    <button className="tool-btn" title="추가">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="24" viewBox="0 0 33 33" fill="none">
-                        <g clip-path="url(#clip0_169_574)">
-                        <path d="M0 16.49C0 17.4694 0.820002 18.2688 1.78001 18.2688H14.72V31.2011C14.72 32.1605 15.52 32.9799 16.5 32.9799C17.4801 32.9799 18.3001 32.1605 18.3001 31.2011V18.2688H31.2201C32.1801 18.2688 33 17.4694 33 16.49C33 15.5106 32.1801 14.6911 31.2201 14.6911H18.3001V1.77892C18.3001 0.819502 17.4801 0 16.5 0C15.52 0 14.72 0.819502 14.72 1.77892V14.6911H1.78001C0.820002 14.6911 0 15.5106 0 16.49Z" fill="black" fill-opacity="0.85" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_169_574">
-                                <rect width="32" height="33" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    </button>
-                </div>
-            </div>
+            <InNav title="FAQ" q={q} onQChange={setQ} onAdd={() => setModal({ q: "", a: "" })} />
+
+            {loading && <div style={{ padding: 12 }}>로딩중…</div>}
 
             <table className="table">
-                <thead><tr><th>카테고리</th><th>제목</th><th>행동</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th style={{ width: "45%" }}>질문</th>
+                        <th>답변</th>
+                        <th style={{ width: 160 }}>관리</th>
+                    </tr>
+                </thead>
                 <tbody>
-                    {items.map(it => (
-                        <tr key={it.id}>
-                            <td>{it.cat}</td>
-                            <td>
-                                <details>
-                                    <summary>{it.title}</summary>
-                                    <div style={{ padding: "8px 0 0 12px" }}>{it.body}</div>
-                                </details>
-                            </td>
-                            <td className="row-actions">
-                                <button className="small-btn">수정</button>
-                                <button className="small-btn">삭제</button>
-                            </td>
-                        </tr>
-                    ))}
+                    {filtered.map((r) => {
+                        const short = r.a.length > 20 ? r.a.slice(0, 20) + "..." : r.a;
+                        const isLong = r.a.length > 20;
+                        return (
+                            <React.Fragment key={r.id}>
+                                <tr>
+                                    <td>{r.q}</td>
+                                    <td>
+                                        {isLong ? (
+                                            <button
+                                                className="linklike"
+                                                onClick={() => toggleOpen(r.id)}
+                                                title="답변 전체 보기"
+                                            >
+                                                {short}
+                                            </button>
+                                        ) : (
+                                            <span>{r.a}</span>
+                                        )}
+                                    </td>
+                                    <td className="row-actions">
+                                        <button className="small-btn" onClick={() => setModal(r)}>수정</button>
+                                        <button className="small-btn" onClick={() => remove(r.id)}>삭제</button>
+                                    </td>
+                                </tr>
+
+                                {openId === r.id && isLong && (
+                                    <tr className="faq-answer-row">
+                                        <td colSpan={3}>
+                                            <div className="faq-answer-full">{r.a}</div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
+                    {filtered.length === 0 && !loading && (
+                        <tr><td colSpan={3} style={{ textAlign: "center" }}>데이터 없음</td></tr>
+                    )}
                 </tbody>
             </table>
-            <div className="pager"><span>Page</span><input /></div>
+
+            {modal && (
+                <div className="modal-backdrop">
+                    <div className="modal">
+                        <h3>{modal.id ? "FAQ 수정" : "FAQ 생성"}</h3>
+                        <div className="form">
+                            <label>질문</label>
+                            <input
+                                placeholder="질문 내용을 입력하세요"
+                                value={modal.q}
+                                onChange={(e) => setModal(m => ({ ...m, q: e.target.value }))}
+                            />
+                            <label>답변</label>
+                            <textarea
+                                rows={5}
+                                placeholder="답변 내용을 입력하세요"
+                                value={modal.a}
+                                onChange={(e) => setModal(m => ({ ...m, a: e.target.value }))}
+                            />
+                        </div>
+                        <div className="actions">
+                            <button className="small-btn" onClick={() => save(modal)}>
+                                {modal.id ? "수정" : "생성"}
+                            </button>
+                            <button className="small-btn" onClick={() => setModal(null)}>닫기</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {!createOpen && !detailOpen && (
+                <Pagination
+                    page={currentPage}
+                    pageCount={pageCount}
+                    onPrev={() => setPage((p) => Math.max(1, p - 1))}
+                    onNext={() => setPage((p) => Math.min(pageCount, p + 1))}
+                />)}
         </>
+
     );
 }
